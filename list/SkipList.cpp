@@ -4,10 +4,11 @@
 #include <random>
 #include <iostream>
 #include <vector>
+#include "List.cpp"
 
 // VALUE must have a default ctor
 template< typename VALUE >
-class SkipList : public List {
+class SkipList : public List< VALUE > {
 
  protected:
 
@@ -211,6 +212,18 @@ int main() {
       assert( false );
    } catch ( ... ) {
       std::cout << "did not find 0" << std::endl;
+   }
+   try {
+      uint32_t _ = list.find( 51 );
+      assert( false );
+   } catch ( ... ) {
+      std::cout << "did not find 51" << std::endl;
+   }
+   try {
+      uint32_t _ = list.find( 101 );
+      assert( false );
+   } catch ( ... ) {
+      std::cout << "did not find 101" << std::endl;
    }
 
    // delete a middle element, ensure it's gone and the others remain
