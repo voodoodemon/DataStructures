@@ -57,7 +57,7 @@ class SkipList {
       NodeRank rank_;
    };
 
-   uint16_t randomLevel() {
+   static uint16_t randomLevel() {
       uint16_t lvl = 1;
       while ( random() < p && lvl < maxLevel ) {
          ++lvl;
@@ -69,11 +69,12 @@ class SkipList {
    static const float p = 0.5;
    static const uint16_t maxLevel = 16;
 
-   uint16_t level;
+   uint16_t level_;
+   size_t size_;
    Node * head;
 
  public:
-   SkipList() : level( 0 ) {
+   SkipList() : level_( 0 ), size_( 0 ) {
       head = Node::makeHead();
       Node * tail = Node::makeTail();
       head->next.resize( maxLevel, tail );
@@ -89,18 +90,21 @@ class SkipList {
 
    void clear() {
       Node * nxt, * cur;
-      cur = head;
-      do {
+      cur = head->next[ 0 ];
+      while ( !cur->isTail() ) {
          nxt = cur->next[ 0 ];
          delete cur;
          cur = nxt;
-      } while ( !cur->isTail() );
+      }
+      head->next[ 0 ] = cur;
    }
 
    bool empty() { return head->next[ 0 ]->isTail(); }
 
+   size_t size() { return size_; }
+
    VALUE find( VALUE value ) {
-      uint16_t currLevel = level;
+      uint16_t currLevel = level_;
       Node * currNode = head;
       do {
          Node * next = currNode->next[ currLevel - 1 ];
@@ -124,10 +128,11 @@ class SkipList {
 
    void insert( VALUE value ) {
       Node * newNode = new Node( value );
+      ++size_;
       uint16_t currLevel = randomLevel();
       newNode->next.resize( currLevel, NULL );
-      if ( currLevel > level ) {
-         level = currLevel;
+      if ( currLevel > level_ ) {
+         level_ = currLevel;
       }
       Node * currNode = head;
       bool keepTraversing;
@@ -151,7 +156,7 @@ class SkipList {
    }
 
    void del( VALUE value ) {
-      uint16_t currLevel = level;
+      uint16_t currLevel = level_;
       Node * currNode = head;
       Node * nextNode;
       bool keepTraversing = false;
@@ -170,6 +175,7 @@ class SkipList {
                if ( currLevel == 1 ) {
                   // found last reference, delete the node
                   delete nextNode;
+                  --size_;
                }
                --currLevel;
             }
@@ -183,26 +189,69 @@ class SkipList {
 // breadth test
 int main() {
    SkipList<uint32_t> s;
+
+   // ensure list is created correctly
+   assert( s.empty() );
+
+   // add some elements and ensure they're all found
    s.insert( 1 );
+   s.insert( 5 );
    s.insert( 10 );
+   s.insert( 50 );
    s.insert( 100 );
    std::cout << "found: " << s.find( 1 ) << std::endl;
+   std::cout << "found: " << s.find( 5 ) << std::endl;
    std::cout << "found: " << s.find( 10 ) << std::endl;
+   std::cout << "found: " << s.find( 50 ) << std::endl;
    std::cout << "found: " << s.find( 100 ) << std::endl;
+
+   // sanity check to make sure no elements are found which aren't in the list
    try {
       uint32_t _ = s.find( 0 );
       assert( false );
    } catch ( ... ) {
       std::cout << "did not find 0" << std::endl;
    }
+
+   // delete a middle element, ensure it's gone and the others remain
    s.del( 10 );
    std::cout << "found: " << s.find( 1 ) << " after del" << std::endl;
+   std::cout << "found: " << s.find( 5 ) << " after del" << std::endl;
+   std::cout << "found: " << s.find( 50 ) << " after del" << std::endl;
+   std::cout << "found: " << s.find( 100 ) << " after del" << std::endl;
    try {
       uint32_t _ = s.find( 10 );
       assert( false );
    } catch ( ... ) {
       std::cout << "did not find 10 after del" << std::endl;
    }
+
+   // delete the first element, ensure it's gone and the others remain
+   s.del( 1 );
+   std::cout << "found: " << s.find( 5 ) << " after del" << std::endl;
+   std::cout << "found: " << s.find( 50 ) << " after del" << std::endl;
    std::cout << "found: " << s.find( 100 ) << " after del" << std::endl;
+   try {
+      uint32_t _ = s.find( 1 );
+      assert( false );
+   } catch ( ... ) {
+      std::cout << "did not find 1 after del" << std::endl;
+   }
+
+   // delete the last element, ensure it's gone and the others remain
+   s.del( 100 );
+   std::cout << "found: " << s.find( 5 ) << " after del" << std::endl;
+   std::cout << "found: " << s.find( 50 ) << " after del" << std::endl;
+   try {
+      uint32_t _ = s.find( 100 );
+      assert( false );
+   } catch ( ... ) {
+      std::cout << "did not find 100 after del" << std::endl;
+   }
+
+   // clear the list ensure no elemenst remain
+   assert( s.size() == 2 );
+   s.clear();
+
    return 0;
 }
