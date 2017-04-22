@@ -39,8 +39,9 @@ void deleteValues( LIST & l, std::vector< VALUE > vals ) {
 
 template< typename LIST, typename VALUE >
 void findValues( LIST & l, std::vector< VALUE > vals ) {
+   static VALUE ret;
    for ( VALUE val : vals ) {
-      l.find( val );
+      ret = l.find( val );
    }
 }
 
@@ -93,8 +94,9 @@ void stdDeleteValues( std::forward_list< VALUE > & l, std::vector< VALUE > vals 
 
 template< typename VALUE >
 void stdFindValues( std::forward_list< VALUE > & l, std::vector< VALUE > vals ) {
+   static VALUE ret;
    for ( VALUE val : vals ) {
-      std::find( l.begin(), l.end(), val );
+      ret = *std::find( l.begin(), l.end(), val );
    }
 }
 
