@@ -3,59 +3,13 @@
 #include <cassert>
 #include <iostream>
 #include <vector>
-// #include "List.cpp"
+#include "List.h"
 
 // VALUE must have a default ctor
 template< typename VALUE >
 class SkipList : public List< VALUE > {
 
  protected:
-
-   class Node {
-
-    public:
-
-      static Node * makeHead() {
-         return new Node( head );
-      }
-      static Node * makeTail() {
-         return new Node( tail );
-      }
-
-      Node( const VALUE & val ) : value( val ), rank_( _ ) {}
-
-      bool operator==( const Node & rhs ) {
-         return !compare( this, rhs );
-      }
-      bool operator<( const Node & rhs ) {
-         return compare( this, rhs ) < 0;
-      }
-      bool operator>( const Node & rhs ) {
-         return compare( this, rhs ) > 0;
-      }
-
-      bool isTail() { return rank_ == tail; }
-
-      VALUE value;
-      std::vector< Node * > next;
-
-    private:
-
-      enum NodeRank {
-         head = 0,
-         _ = 1,
-         tail = 2
-      };
-
-      Node( const NodeRank & rank ) : rank_( rank ) {}
-
-      // - if left less than right, 0 if equal, + if less greater than right
-      static int compare( const Node & l, const Node & r ) {
-         return ( l.rank_ == r.rank_ ) ? l.value - r.value : l.rank_ - r.rank;
-      }
-
-      NodeRank rank_;
-   };
 
    static uint16_t randomLevel() {
       uint16_t lvl = 1;
@@ -69,15 +23,23 @@ class SkipList : public List< VALUE > {
    static const float p = 0.5;
    static const uint16_t maxLevel = 16;
 
+   class _Node : public Node< VALUE > {
+    public:
+      _Node() : Node< VALUE >() {}
+      _Node( const VALUE & val ) : Node< VALUE >( val ) {
+         uint16_t newLevel = randomLevel();
+         next.resize( newLevel, NULL );
+      }
+      std::vector< _Node * > next;
+   };
+
    uint16_t level_;
-   size_t size_;
-   Node * head;
+   _Node * head;
 
  public:
-   SkipList() : level_( 0 ), size_( 0 ) {
-      head = Node::makeHead();
-      Node * tail = Node::makeTail();
-      head->next.resize( maxLevel, tail );
+   SkipList() : level_( 0 ) {
+      head = new _Node();
+      head->next.resize( maxLevel, NULL );
    }
 
    // TODO: initiliazer list constructor
@@ -89,9 +51,9 @@ class SkipList : public List< VALUE > {
    }
 
    virtual void clear() {
-      Node * nxt, * cur;
+      _Node * nxt, * cur;
       cur = head->next[ 0 ];
-      while ( !cur->isTail() ) {
+      while ( cur ) {
          nxt = cur->next[ 0 ];
          delete cur;
          cur = nxt;
@@ -99,16 +61,14 @@ class SkipList : public List< VALUE > {
       head->next[ 0 ] = cur;
    }
 
-   virtual bool empty() { return head->next[ 0 ]->isTail(); }
-
-   virtual size_t size() { return size_; }
+   virtual bool empty() { return head->next[ 0 ]; }
 
    virtual VALUE find( VALUE value ) {
       uint16_t currLevel = level_;
-      Node * currNode = head;
+      _Node * currNode = head;
       do {
-         Node * next = currNode->next[ currLevel - 1 ];
-         if ( !next->isTail() ) {
+         _Node * next = currNode->next[ currLevel - 1 ];
+         if ( next ) {
             if ( next->value < value ) {
                // keep traversing the list at this level
                currNode = next;
@@ -127,18 +87,16 @@ class SkipList : public List< VALUE > {
    }
 
    virtual void insert( VALUE value ) {
-      Node * newNode = new Node( value );
-      ++size_;
-      uint16_t newLevel = randomLevel();
-      newNode->next.resize( newLevel, NULL );
+      _Node * newNode = new _Node( value );
+      uint16_t newLevel = newNode->next.size();
       if ( newLevel > level_ ) {
          level_ = newLevel ;
       }
       uint16_t currLevel = level_;
-      Node * currNode = head;
+      _Node * currNode = head;
       do {
-         Node * nextNode = currNode->next[ currLevel - 1 ];
-         if ( !nextNode->isTail() && nextNode->value < value ) {
+         _Node * nextNode = currNode->next[ currLevel - 1 ];
+         if ( nextNode && nextNode->value < value ) {
             // keep traversing the list at this level
             currNode = nextNode;
          } else {
@@ -154,13 +112,13 @@ class SkipList : public List< VALUE > {
 
    virtual void del( VALUE value ) {
       uint16_t currLevel = level_;
-      Node * currNode = head;
-      Node * nextNode;
+      _Node * currNode = head;
+      _Node * nextNode;
       bool keepTraversing = false;
       do {
          keepTraversing = false;
-         Node * nextNode = currNode->next[ currLevel - 1 ];
-         if ( !nextNode->isTail() ) {
+         _Node * nextNode = currNode->next[ currLevel - 1 ];
+         if ( nextNode ) {
             if ( nextNode->value < value ) {
                // keep traversing the list at this level
                currNode = nextNode;
@@ -172,7 +130,6 @@ class SkipList : public List< VALUE > {
                if ( currLevel == 1 ) {
                   // found last reference, delete the node
                   delete nextNode;
-                  --size_;
                   return;
                }
             }
@@ -258,7 +215,6 @@ class SkipList : public List< VALUE > {
 //    }
 // 
 //    // clear the list ensure no elemenst remain
-//    assert( list.size() == 2 );
 //    list.clear();
 // 
 //    return 0;

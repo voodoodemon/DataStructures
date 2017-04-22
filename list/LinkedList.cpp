@@ -3,48 +3,25 @@
 #include <cassert>
 #include <random>
 #include <iostream>
-// #include "List.cpp"
+#include "List.h"
 
 template< typename VALUE >
 class LinkedList : public List< VALUE > {
 
  protected:
 
-   class Node {
-
+   class _Node : public Node< VALUE > {
     public:
-
-      Node( const VALUE & val ) : value( val ) {}
-
-      Node() : next( NULL ) {}
-
-      bool operator==( const Node & rhs ) {
-         return !( this->value - rhs.value );
-      }
-      bool operator<( const Node & rhs ) {
-         return ( this->value - rhs.value ) < 0;
-      }
-      bool operator>( const Node & rhs ) {
-         return ( this->value - rhs ) > 0;
-      }
-      VALUE value;
-      Node * next;
-
-    private:
-
-      // - if left less than right, 0 if equal, + if less greater than right
-      static int compare( const Node & l, const Node & r ) {
-         return l.value - r.value;
-      }
+      _Node( const VALUE & val ) : Node< VALUE >( val ), next( NULL ) {}
+      _Node() : next( NULL ) {}
+      _Node * next;
    };
 
-   size_t size_;
-   Node * head;
+   _Node * head;
 
  public:
-   LinkedList() : size_( 0 ) {
-      head = new Node();
-      head->next = NULL;
+   LinkedList() {
+      head = new _Node();
    }
 
    // TODO: initiliazer list constructor
@@ -55,7 +32,7 @@ class LinkedList : public List< VALUE > {
    }
 
    virtual void clear() {
-      Node * nxt, * cur;
+      _Node * nxt, * cur;
       cur = head->next;
       while ( cur ) {
          nxt = cur->next;
@@ -67,10 +44,8 @@ class LinkedList : public List< VALUE > {
 
    virtual bool empty() { return head->next == NULL; }
 
-   virtual size_t size() { return size_; }
-
    virtual VALUE find( VALUE value ) {
-      Node * currNode = head->next;
+      _Node * currNode = head->next;
       while ( currNode ) {
          if ( currNode->value == value ) {
             return currNode->value;
@@ -81,9 +56,8 @@ class LinkedList : public List< VALUE > {
    }
 
    virtual void insert( VALUE value ) {
-      Node * newNode = new Node( value );
-      ++size_;
-      Node * currNode = head;
+      _Node * newNode = new _Node( value );
+      _Node * currNode = head;
       while ( currNode->next && currNode->next->value < value ) {
          currNode = currNode->next;
       }
@@ -92,8 +66,8 @@ class LinkedList : public List< VALUE > {
    }
 
    virtual void del( VALUE value ) {
-      Node * currNode = head;
-      Node * nextNode = currNode->next;
+      _Node * currNode = head;
+      _Node * nextNode = currNode->next;
       while ( nextNode ) {
          if ( nextNode->value < value ) {
             currNode = nextNode;
@@ -101,7 +75,6 @@ class LinkedList : public List< VALUE > {
          } else if ( nextNode->value == value ) {
             currNode->next = nextNode->next;
             delete nextNode;
-            --size_;
             return;
          }
       }
@@ -184,7 +157,6 @@ class LinkedList : public List< VALUE > {
 //    }
 // 
 //    // clear the list ensure no elemenst remain
-//    assert( list.size() == 2 );
 //    list.clear();
 // 
 //    return 0;

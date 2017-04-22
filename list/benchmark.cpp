@@ -1,6 +1,6 @@
 /* Benchmark of List implementations */
 
-#include "List.cpp"
+#include "List.h"
 #include "LinkedList.cpp"
 #include "SkipList.cpp"
 #include <random>
