@@ -3,7 +3,7 @@
 #include <cassert>
 #include <random>
 #include <iostream>
-#include "List.cpp"
+// #include "List.cpp"
 
 template< typename VALUE >
 class LinkedList : public List< VALUE > {
@@ -109,83 +109,83 @@ class LinkedList : public List< VALUE > {
 };
 
 // breadth test
-int main() {
-   LinkedList<uint32_t> list;
-
-   // ensure list is created correctly
-   assert( list.empty() );
-
-   // add some elements and ensure they're all found
-   list.insert( 1 );
-   list.insert( 5 );
-   list.insert( 10 );
-   list.insert( 50 );
-   list.insert( 100 );
-   std::cout << "found: " << list.find( 1 ) << std::endl;
-   std::cout << "found: " << list.find( 5 ) << std::endl;
-   std::cout << "found: " << list.find( 10 ) << std::endl;
-   std::cout << "found: " << list.find( 50 ) << std::endl;
-   std::cout << "found: " << list.find( 100 ) << std::endl;
-
-   // sanity check to make sure no elements are found which aren't in the list
-   try {
-      uint32_t _ = list.find( 0 );
-      assert( false );
-   } catch ( ... ) {
-      std::cout << "did not find 0" << std::endl;
-   }
-   try {
-      uint32_t _ = list.find( 51 );
-      assert( false );
-   } catch ( ... ) {
-      std::cout << "did not find 51" << std::endl;
-   }
-   try {
-      uint32_t _ = list.find( 101 );
-      assert( false );
-   } catch ( ... ) {
-      std::cout << "did not find 101" << std::endl;
-   }
-
-   // delete a middle element, ensure it's gone and the others remain
-   list.del( 10 );
-   std::cout << "found: " << list.find( 1 ) << " after del" << std::endl;
-   std::cout << "found: " << list.find( 5 ) << " after del" << std::endl;
-   std::cout << "found: " << list.find( 50 ) << " after del" << std::endl;
-   std::cout << "found: " << list.find( 100 ) << " after del" << std::endl;
-   try {
-      uint32_t _ = list.find( 10 );
-      assert( false );
-   } catch ( ... ) {
-      std::cout << "did not find 10 after del" << std::endl;
-   }
-
-   // delete the first element, ensure it's gone and the others remain
-   list.del( 1 );
-   std::cout << "found: " << list.find( 5 ) << " after del" << std::endl;
-   std::cout << "found: " << list.find( 50 ) << " after del" << std::endl;
-   std::cout << "found: " << list.find( 100 ) << " after del" << std::endl;
-   try {
-      uint32_t _ = list.find( 1 );
-      assert( false );
-   } catch ( ... ) {
-      std::cout << "did not find 1 after del" << std::endl;
-   }
-
-   // delete the last element, ensure it's gone and the others remain
-   list.del( 100 );
-   std::cout << "found: " << list.find( 5 ) << " after del" << std::endl;
-   std::cout << "found: " << list.find( 50 ) << " after del" << std::endl;
-   try {
-      uint32_t _ = list.find( 100 );
-      assert( false );
-   } catch ( ... ) {
-      std::cout << "did not find 100 after del" << std::endl;
-   }
-
-   // clear the list ensure no elemenst remain
-   assert( list.size() == 2 );
-   list.clear();
-
-   return 0;
-}
+// int main() {
+//    LinkedList<uint32_t> list;
+// 
+//    // ensure list is created correctly
+//    assert( list.empty() );
+// 
+//    // add some elements and ensure they're all found
+//    list.insert( 1 );
+//    list.insert( 5 );
+//    list.insert( 10 );
+//    list.insert( 50 );
+//    list.insert( 100 );
+//    std::cout << "found: " << list.find( 1 ) << std::endl;
+//    std::cout << "found: " << list.find( 5 ) << std::endl;
+//    std::cout << "found: " << list.find( 10 ) << std::endl;
+//    std::cout << "found: " << list.find( 50 ) << std::endl;
+//    std::cout << "found: " << list.find( 100 ) << std::endl;
+// 
+//    // sanity check to make sure no elements are found which aren't in the list
+//    try {
+//       uint32_t _ = list.find( 0 );
+//       assert( false );
+//    } catch ( ... ) {
+//       std::cout << "did not find 0" << std::endl;
+//    }
+//    try {
+//       uint32_t _ = list.find( 51 );
+//       assert( false );
+//    } catch ( ... ) {
+//       std::cout << "did not find 51" << std::endl;
+//    }
+//    try {
+//       uint32_t _ = list.find( 101 );
+//       assert( false );
+//    } catch ( ... ) {
+//       std::cout << "did not find 101" << std::endl;
+//    }
+// 
+//    // delete a middle element, ensure it's gone and the others remain
+//    list.del( 10 );
+//    std::cout << "found: " << list.find( 1 ) << " after del" << std::endl;
+//    std::cout << "found: " << list.find( 5 ) << " after del" << std::endl;
+//    std::cout << "found: " << list.find( 50 ) << " after del" << std::endl;
+//    std::cout << "found: " << list.find( 100 ) << " after del" << std::endl;
+//    try {
+//       uint32_t _ = list.find( 10 );
+//       assert( false );
+//    } catch ( ... ) {
+//       std::cout << "did not find 10 after del" << std::endl;
+//    }
+// 
+//    // delete the first element, ensure it's gone and the others remain
+//    list.del( 1 );
+//    std::cout << "found: " << list.find( 5 ) << " after del" << std::endl;
+//    std::cout << "found: " << list.find( 50 ) << " after del" << std::endl;
+//    std::cout << "found: " << list.find( 100 ) << " after del" << std::endl;
+//    try {
+//       uint32_t _ = list.find( 1 );
+//       assert( false );
+//    } catch ( ... ) {
+//       std::cout << "did not find 1 after del" << std::endl;
+//    }
+// 
+//    // delete the last element, ensure it's gone and the others remain
+//    list.del( 100 );
+//    std::cout << "found: " << list.find( 5 ) << " after del" << std::endl;
+//    std::cout << "found: " << list.find( 50 ) << " after del" << std::endl;
+//    try {
+//       uint32_t _ = list.find( 100 );
+//       assert( false );
+//    } catch ( ... ) {
+//       std::cout << "did not find 100 after del" << std::endl;
+//    }
+// 
+//    // clear the list ensure no elemenst remain
+//    assert( list.size() == 2 );
+//    list.clear();
+// 
+//    return 0;
+// }
