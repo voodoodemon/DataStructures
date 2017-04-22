@@ -1,5 +1,8 @@
 /* Basic Skip List */
 
+#ifndef SKIPLIST_H
+#define SKIPLIS_H
+
 #include <cassert>
 #include <iostream>
 #include <vector>
@@ -219,3 +222,4 @@ class SkipList : public List< VALUE > {
 // 
 //    return 0;
 // }
+#endif

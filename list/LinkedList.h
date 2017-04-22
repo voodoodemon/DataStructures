@@ -1,5 +1,8 @@
 /* Basic LinkedList */
 
+#ifndef LINKEDLIST_H
+#define LINKEDLIST_H
+
 #include <cassert>
 #include <random>
 #include <iostream>
@@ -7,16 +10,13 @@
 
 template< typename VALUE >
 class LinkedList : public List< VALUE > {
-
  protected:
-
    class _Node : public Node< VALUE > {
     public:
       _Node( const VALUE & val ) : Node< VALUE >( val ), next( NULL ) {}
       _Node() : next( NULL ) {}
       _Node * next;
    };
-
    _Node * head;
 
  public:
@@ -161,3 +161,5 @@ class LinkedList : public List< VALUE > {
 // 
 //    return 0;
 // }
+//
+#endif

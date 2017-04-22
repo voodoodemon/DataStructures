@@ -1,12 +1,11 @@
 /* Benchmark of List implementations */
 
-#include "List.h"
-#include "LinkedList.cpp"
-#include "SkipList.cpp"
 #include <random>
 #include <iostream>
 #include <chrono>
 #include <forward_list>
+#include "LinkedList.h"
+#include "SkipList.h"
 
 // from http://stackoverflow.com/questions/2808398/easily-measure-elapsed-time
 template<typename TimeT = std::chrono::milliseconds>
