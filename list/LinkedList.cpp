@@ -84,10 +84,8 @@ class LinkedList : public List< VALUE > {
       Node * newNode = new Node( value );
       ++size_;
       Node * currNode = head;
-      while ( currNode->next ) {
-         if ( currNode->next && currNode->next->value < value ) {
-            currNode = currNode->next;
-         }
+      while ( currNode->next && currNode->next->value < value ) {
+         currNode = currNode->next;
       }
       newNode->next = currNode->next;
       currNode->next = newNode;

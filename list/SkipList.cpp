@@ -60,7 +60,7 @@ class SkipList : public List< VALUE > {
 
    static uint16_t randomLevel() {
       uint16_t lvl = 1;
-      while ( random() < p && lvl < maxLevel ) {
+      while ( rand() / static_cast< double >( RAND_MAX ) < p && lvl < maxLevel ) {
          ++lvl;
       }
       return lvl;
@@ -130,27 +130,24 @@ class SkipList : public List< VALUE > {
    virtual void insert( VALUE value ) {
       Node * newNode = new Node( value );
       ++size_;
-      uint16_t currLevel = randomLevel();
-      newNode->next.resize( currLevel, NULL );
-      if ( currLevel > level_ ) {
-         level_ = currLevel;
+      uint16_t newLevel = randomLevel();
+      newNode->next.resize( newLevel, NULL );
+      if ( newLevel > level_ ) {
+         level_ = newLevel ;
       }
+      uint16_t currLevel = level_;
       Node * currNode = head;
-      bool keepTraversing;
       do {
-         keepTraversing = false;
          Node * nextNode = currNode->next[ currLevel - 1 ];
-         if ( !nextNode->isTail() ) {
-            if ( nextNode->value < value ) {
-               // keep traversing the list at this level
-               currNode = nextNode;
-               keepTraversing = true;
-            }
-         }
-         if ( !keepTraversing ) {
+         if ( !nextNode->isTail() && nextNode->value < value ) {
+            // keep traversing the list at this level
+            currNode = nextNode;
+         } else {
             // hit the end of the list, set pointers then drop a level and try again
-            newNode->next[ currLevel - 1 ] = nextNode;
-            currNode->next[ currLevel - 1 ] = newNode;
+            if ( currLevel <= newLevel ) {
+               newNode->next[ currLevel - 1 ] = nextNode;
+               currNode->next[ currLevel - 1 ] = newNode;
+            }
             --currLevel;
          }
       } while ( currLevel > 0 );

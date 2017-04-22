@@ -1,5 +1,7 @@
 /* List interface */
 
+#include <cstddef>
+
 template< typename VALUE >
 class List {
  public:
